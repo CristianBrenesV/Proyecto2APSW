@@ -1,0 +1,146 @@
+﻿@page
+@model SistemaSolicitudesLaDat.Pages.CMS.PropuestaSolicitudModel
+@{
+    ViewData["Title"] = "Registrar Propuesta";
+    Layout = "_PrincipalLayout";
+}
+
+<h1 class="mt-4">Registrar Propuesta</h1>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+
+<form method="post" class="mt-4">
+
+    <input type="hidden" asp-for="Propuesta.id_solicitud" />
+
+    <div class="mb-3">
+        <label asp-for="ProveedorInput.CedulaJuridica" class="form-label">Cédula Jurídica</label>
+        <input asp-for="ProveedorInput.CedulaJuridica" class="form-control" />
+        <span asp-validation-for="ProveedorInput.CedulaJuridica" class="text-danger"></span>
+    </div>
+
+    <button type="submit" name="action" value="verificar" class="btn btn-primary mb-3">Verificar Proveedor</button>
+
+    @if (Model.ProveedorExiste)
+    {
+        <div class="mb-3">
+            <label asp-for="ProveedorInput.Nombre" class="form-label">Nombre del Proveedor</label>
+            <input asp-for="ProveedorInput.Nombre" class="form-control" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ProveedorInput.NombreRepresentante" class="form-label">Nombre del Representante</label>
+            <input asp-for="ProveedorInput.NombreRepresentante" class="form-control" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ProveedorInput.TelefonoContacto" class="form-label">Teléfono de Contacto</label>
+            <input asp-for="ProveedorInput.TelefonoContacto" class="form-control" readonly />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ProveedorInput.CorreoContacto" class="form-label">Correo Electrónico</label>
+            <input asp-for="ProveedorInput.CorreoContacto" class="form-control" readonly />
+        </div>
+    }
+    else if (Model.VerModalCrearProveedor)
+    {
+        <div class="alert alert-warning">
+            Proveedor no encontrado, por favor ingrese los datos para crear el proveedor:
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ProveedorInput.Nombre" class="form-label">Nombre del Proveedor</label>
+            <input asp-for="ProveedorInput.Nombre" class="form-control" />
+            <span asp-validation-for="ProveedorInput.Nombre" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ProveedorInput.NombreRepresentante" class="form-label">Nombre del Representante</label>
+            <input asp-for="ProveedorInput.NombreRepresentante" class="form-control" />
+            <span asp-validation-for="ProveedorInput.NombreRepresentante" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ProveedorInput.TelefonoContacto" class="form-label">Teléfono de Contacto</label>
+            <input asp-for="ProveedorInput.TelefonoContacto" class="form-control" />
+            <span asp-validation-for="ProveedorInput.TelefonoContacto" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="ProveedorInput.CorreoContacto" class="form-label">Correo Electrónico</label>
+            <input asp-for="ProveedorInput.CorreoContacto" class="form-control" />
+            <span asp-validation-for="ProveedorInput.CorreoContacto" class="text-danger"></span>
+        </div>
+
+        <button type="submit" name="action" value="crearProveedor" class="btn btn-success mb-3">Crear Proveedor</button>
+    }
+
+    <hr />
+
+    <h4>Detalles de la Propuesta</h4>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mes</th>
+                <th>Año</th>
+                <th>Horas</th>
+                <th>Monto</th>
+                <th>IVA (13%)</th>
+                <th>Total</th>
+                <th>Observaciones</th>
+                <th>% Cobro</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Detalles.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input asp-for="@Model.Detalles[i].mes" class="form-control" type="number" min="1" max="12" />
+                        <span asp-validation-for="@Model.Detalles[i].mes" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="@Model.Detalles[i].anio" class="form-control" type="number" min="2000" />
+                        <span asp-validation-for="@Model.Detalles[i].anio" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="@Model.Detalles[i].horas" class="form-control" type="number" step="0.01" min="0" />
+                        <span asp-validation-for="@Model.Detalles[i].horas" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="@Model.Detalles[i].monto" class="form-control" type="number" step="0.01" min="0" />
+                        <span asp-validation-for="@Model.Detalles[i].monto" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input value="@(Model.Detalles[i].monto * 0.13m)" class="form-control" readonly />
+                    </td>
+                    <td>
+                        <input value="@(Model.Detalles[i].monto * 1.13m)" class="form-control" readonly />
+                    </td>
+                    <td>
+                        <input asp-for="@Model.Detalles[i].observaciones" class="form-control" />
+                        <span asp-validation-for="@Model.Detalles[i].observaciones" class="text-danger"></span>
+                    </td>
+                    <td>
+                        <input asp-for="@Model.Detalles[i].porcentaje_cobro" class="form-control" type="number" step="0.01" min="0" max="100" />
+                        <span asp-validation-for="@Model.Detalles[i].porcentaje_cobro" class="text-danger"></span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" name="action" value="guardar" class="btn btn-success mt-3">Confirmar</button>
+    <a asp-page="/CMS/DetalleSolicitud" asp-route-id="@Model.Propuesta.id_solicitud" class="btn btn-secondary ms-2 mt-3">Cancelar</a>
+    <a asp-page="/CargaExcel" asp-route-idSolicitud="@Model.Propuesta.id_solicitud" class="btn btn-info ms-2 mt-3">Cargar Excel</a>
+
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

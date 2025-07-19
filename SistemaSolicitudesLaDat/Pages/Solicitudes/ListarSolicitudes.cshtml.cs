@@ -123,6 +123,44 @@ namespace SistemaSolicitudesLaDat.Pages.Solicitudes
 
             return "table-success";
         }
+        public async Task<IActionResult> OnPostPublicarAsync(string IdSolicitud, bool EsPublicada, DateTime? FechaVencimiento)
+        {
+            var idUsuarioEjecutor = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(idUsuarioEjecutor))
+            {
+                TempData["Mensaje"] = "Error al identificar al usuario.";
+                return RedirectToPage();
+            }
+
+            if (EsPublicada && FechaVencimiento == null)
+            {
+                TempData["Mensaje"] = "Debe indicar la fecha de vencimiento para publicar la solicitud.";
+                return RedirectToPage();
+            }
+
+            var solicitud = new Solicitud
+            {
+                id_solicitud = IdSolicitud,
+                es_publicada = EsPublicada,
+                fecha_vencimiento_publicacion = EsPublicada ? FechaVencimiento : null
+            };
+
+            try
+            {
+                await _solicitudService.PublicarAsync(solicitud, idUsuarioEjecutor);
+
+                TempData["Mensaje"] = EsPublicada
+                    ? "La solicitud fue publicada correctamente."
+                    : "La solicitud fue despublicada.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Mensaje"] = "Ocurrió un error al actualizar la publicación: " + ex.Message;
+            }
+
+            return RedirectToPage();
+        }
 
     }
 }

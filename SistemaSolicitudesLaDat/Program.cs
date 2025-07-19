@@ -1,19 +1,21 @@
 ﻿using SistemaSolicitudesLaDat.Repository.Bitacora;
+using SistemaSolicitudesLaDat.Repository.Desgloses;
 using SistemaSolicitudesLaDat.Repository.Infrastructure;
 using SistemaSolicitudesLaDat.Repository.Login;
-using SistemaSolicitudesLaDat.Repository.Usuarios;
-using SistemaSolicitudesLaDat.Repository.Solicitudes;
 using SistemaSolicitudesLaDat.Repository.Representantes;
-using SistemaSolicitudesLaDat.Repository.Desgloses;
+using SistemaSolicitudesLaDat.Repository.Solicitudes;
+using SistemaSolicitudesLaDat.Repository.Usuarios;
 using SistemaSolicitudesLaDat.Service.Abstract;
+using SistemaSolicitudesLaDat.Service.Bitacora;
+using SistemaSolicitudesLaDat.Service.Desgloses;
 using SistemaSolicitudesLaDat.Service.Encriptado;
 using SistemaSolicitudesLaDat.Service.Login;
-using SistemaSolicitudesLaDat.Service.Seguridad;
-using SistemaSolicitudesLaDat.Service.Usuarios;
-using SistemaSolicitudesLaDat.Service.Bitacora;
-using SistemaSolicitudesLaDat.Service.Solicitudes;
 using SistemaSolicitudesLaDat.Service.Representantes;
-using SistemaSolicitudesLaDat.Service.Desgloses;
+using SistemaSolicitudesLaDat.Service.Seguridad;
+using SistemaSolicitudesLaDat.Service.Solicitudes;
+using SistemaSolicitudesLaDat.Service.Usuarios;
+using SistemaSolicitudesLaDat.Services;
+//using SistemaSolicitudesLaDat.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +29,17 @@ builder.Services.AddScoped<UsuarioRepository>();
 builder.Services.AddScoped<LoginRepository>();
 builder.Services.AddScoped<SolicitudRepository>();
 
+builder.Services.AddScoped<ImpuestoRepository>();
+builder.Services.AddScoped<BitacoraRepository>();
+builder.Services.AddScoped<EstadoSolicitudRepository>();
+builder.Services.AddScoped<SolicitudRepository>();
+builder.Services.AddScoped<RepresentantesRepository>();
+builder.Services.AddScoped<DesgloseRepository>();
+
+builder.Services.AddScoped<DetallePropuestaRepository>();
+builder.Services.AddScoped<PropuestaRepository>(); 
+builder.Services.AddScoped<ProveedorRepository>();
+
 // Servicios
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IBitacoraService, BitacoraService>();
@@ -38,14 +51,12 @@ builder.Services.AddScoped<IRepresentanteService, RepresentanteService>();
 builder.Services.AddScoped<IDesgloseService, DesgloseService>();
 builder.Services.AddScoped<IImpuestoService, ImpuestoService>();
 
+builder.Services.AddScoped<IProveedorService, ProveedorService>();
+builder.Services.AddScoped <IDetallePropuestaService, DetallePropuestaService>();
+builder.Services.AddScoped <IPropuestaService, PropuestaService>();
+
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<EncriptadoService>();
-builder.Services.AddScoped<BitacoraRepository>();
-builder.Services.AddScoped<EstadoSolicitudRepository>();
-builder.Services.AddScoped<SolicitudRepository>();
-builder.Services.AddScoped<RepresentantesRepository>();
-builder.Services.AddScoped<DesgloseRepository>();
-builder.Services.AddScoped<ImpuestoRepository>();
 
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>

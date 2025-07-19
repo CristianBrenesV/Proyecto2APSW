@@ -1,6 +1,5 @@
 ﻿using SistemaSolicitudesLaDat.Entities.Representantes;
 using SistemaSolicitudesLaDat.Entities.Solicitudes;
-using SistemaSolicitudesLaDat.Repository.Representantes;
 using SistemaSolicitudesLaDat.Repository.Solicitudes;
 using SistemaSolicitudesLaDat.Service.Abstract;
 
@@ -117,6 +116,49 @@ namespace SistemaSolicitudesLaDat.Service.Solicitudes
                 await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
                 throw;
             }
+        }
+
+        public async Task PublicarAsync(Solicitud solicitud, string usuarioEjecutor)
+        {
+            try
+            {
+                var actualizado = await _solicitudRepository.PublicarAsync(solicitud);
+
+                if (actualizado == 1)
+                {
+                    var registro = await _bitacoraService.RegistrarAccionAsync(
+                        usuarioEjecutor,
+                        solicitud.es_publicada ? "Publicación de solicitud" : "Despublicación de solicitud",
+                        new
+                        {
+                            solicitud.id_solicitud,
+                            solicitud. es_publicada,
+                            solicitud.fecha_vencimiento_publicacion
+                        },
+                        solicitud.id_solicitud
+                    );
+
+                    if (!registro)
+                    {
+                        Console.WriteLine("No se pudo registrar la bitácora de publicación/despublicación.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
+                throw;
+            }
+        }
+
+        public async Task<(List<Solicitud> solicitudes, int totalRegistros)> ObtenerSolicitudesPublicadasAsync(int paginaActual, int pageSize)
+        {
+            return await _solicitudRepository.ObtenerSolicitudesPublicadasAsync(paginaActual, pageSize);
+        }
+
+        public async Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud)
+        {
+            return await _solicitudRepository.ObtenerDetalleSolicitudAsync(idSolicitud);
         }
 
         public async Task<bool> EliminarAsync(Solicitud solicitud, string usuarioEjecutor)
