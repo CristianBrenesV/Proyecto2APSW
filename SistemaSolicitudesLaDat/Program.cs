@@ -20,6 +20,8 @@ using SistemaSolicitudesLaDat.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configurar EPPlus para licencia no comercial
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddSingleton<IDbConnectionFactory, DbConnectionFactory>();

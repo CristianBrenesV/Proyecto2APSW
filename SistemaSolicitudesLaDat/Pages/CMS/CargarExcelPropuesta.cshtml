@@ -1,4 +1,23 @@
 ﻿@page
 @model SistemaSolicitudesLaDat.Pages.CMS.CargarExcelPropuestaModel
 @{
+    ViewData["Title"] = "Cargar propuesta desde Excel";
+    Layout = "_PrincipalLayout";
 }
+
+<h2>Cargar propuesta desde Excel</h2>
+
+@if (!string.IsNullOrEmpty(Model.MensajeError))
+{
+    <div class="alert alert-danger">@Model.MensajeError</div>
+}
+
+<form method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="ArchivoExcel" class="form-label">Archivo Excel (.xlsx)</label>
+        <input type="file" id="ArchivoExcel" name="ArchivoExcel" class="form-control" accept=".xlsx" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Cargar</button>
+    <a asp-page="/CMS/PropuestaSolicitud" class="btn btn-secondary">Cancelar</a>
+</form>

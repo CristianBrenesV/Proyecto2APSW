@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using SistemaSolicitudesLaDat.Entities.Solicitudes;
 using SistemaSolicitudesLaDat.Service.Abstract;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json;
 
 namespace SistemaSolicitudesLaDat.Pages.CMS
 {
@@ -34,6 +35,13 @@ namespace SistemaSolicitudesLaDat.Pages.CMS
 
         public void OnGet(string id)
         {
+            // Si vienen detalles cargados en TempData (desde el Excel), los deserializamos y asignamos
+            if (TempData.ContainsKey("DetallesCargados"))
+            {
+                var json = TempData["DetallesCargados"]?.ToString() ?? "[]";
+                Detalles = JsonSerializer.Deserialize<List<DetallePropuesta>>(json) ?? new List<DetallePropuesta>();
+            }
+
             Propuesta.id_solicitud = id;
             if (Detalles.Count == 0)
                 Detalles.Add(new DetallePropuesta());
@@ -182,7 +190,7 @@ namespace SistemaSolicitudesLaDat.Pages.CMS
 
         public IActionResult OnPostCargarExcel()
         {
-            return RedirectToPage("/CMS/CargarExcelPropuesta", new { idSolicitud = Propuesta.id_solicitud });
+            return RedirectToPage("/CMS/CargarExcelPropuesta", new { id_solicitud = Propuesta.id_solicitud });
         }
     }
 }
