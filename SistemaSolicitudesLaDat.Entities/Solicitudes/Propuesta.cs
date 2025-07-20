@@ -7,7 +7,7 @@ namespace SistemaSolicitudesLaDat.Entities.Solicitudes
     {
         public int id_propuesta { get; set; }
 
-        public string id_solicitud { get; set; } = null!;  
+        public string? id_solicitud { get; set; }
 
         public int id_proveedor { get; set; }
 

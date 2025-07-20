@@ -28,14 +28,17 @@ namespace SistemaSolicitudesLaDat.Repository.Solicitudes
             var parameters = new DynamicParameters();
             parameters.Add("p_id_solicitud", propuesta.id_solicitud);
             parameters.Add("p_id_proveedor", propuesta.id_proveedor);
+            parameters.Add("p_id_propuesta", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-            int nuevoId = await connection.ExecuteScalarAsync<int>(
+            await connection.ExecuteAsync(
                 "InsertarPropuesta",
                 parameters,
                 commandType: CommandType.StoredProcedure);
 
+            int nuevoId = parameters.Get<int>("p_id_propuesta");
             return nuevoId;
         }
+
         public async Task<List<PropuestaConProveedor>> ObtenerPropuestasConProveedorPorSolicitudAsync(string idSolicitud)
         {
             using var connection = _dbConnectionFactory.CreateConnection();

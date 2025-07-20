@@ -1,112 +1,209 @@
-﻿@page
+﻿@page "{id?}"
 @model SistemaSolicitudesLaDat.Pages.CMS.PropuestaSolicitudModel
 @{
-    ViewData["Title"] = "Registrar Propuesta";
+    ViewData["Title"] = "Proponer a Solicitud";
     Layout = "_PrincipalLayout";
 }
+<style>
+    .field-validation-valid {
+        display: none;
+    }
+</style>
 
-<h1 class="mt-4">Registrar Propuesta</h1>
+<h1 class="mt-4">Proponer a Solicitud @Model.Propuesta.id_solicitud</h1>
 
-@if (TempData["Mensaje"] != null)
+@if (!string.IsNullOrEmpty(Model.Mensaje))
 {
-    <div class="alert alert-success">@TempData["Mensaje"]</div>
+    <div class="alert alert-info">@Model.Mensaje</div>
 }
 
-<form method="post" class="mt-4">
-
-    <input type="hidden" asp-for="Propuesta.id_solicitud" />
-
-    <div class="mb-3">
-        <label asp-for="Proveedor.cedula_juridica" class="form-label">Cédula Jurídica</label>
-        <input asp-for="Proveedor.cedula_juridica" class="form-control" />
-        <span asp-validation-for="Proveedor.cedula_juridica" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Proveedor.nombre" class="form-label">Nombre del Proveedor</label>
-        <input asp-for="Proveedor.nombre" class="form-control" />
-        <span asp-validation-for="Proveedor.nombre" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Proveedor.nombre_representante" class="form-label">Nombre del Representante</label>
-        <input asp-for="Proveedor.nombre_representante" class="form-control" />
-        <span asp-validation-for="Proveedor.nombre_representante" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Proveedor.telefono" class="form-label">Teléfono de Contacto</label>
-        <input asp-for="Proveedor.telefono" class="form-control" />
-        <span asp-validation-for="Proveedor.telefono" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Proveedor.correo_electronico" class="form-label">Correo Electrónico</label>
-        <input asp-for="Proveedor.correo_electronico" class="form-control" />
-        <span asp-validation-for="Proveedor.correo_electronico" class="text-danger"></span>
-    </div>
-
-    <hr />
-
-    <h4>Detalles de la Propuesta</h4>
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Mes</th>
-                <th>Año</th>
-                <th>Horas</th>
-                <th>Monto</th>
-                <th>IVA (13%)</th>
-                <th>Total</th>
-                <th>Observaciones</th>
-                <th>% Cobro</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < Model.Detalles.Count; i++)
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
             {
-                <tr>
-                    <td>
-                        <input asp-for="@Model.Detalles[i].mes" class="form-control" type="number" min="1" max="12" />
-                        <span asp-validation-for="@Model.Detalles[i].mes" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input asp-for="@Model.Detalles[i].anio" class="form-control" type="number" min="2000" />
-                        <span asp-validation-for="@Model.Detalles[i].anio" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input asp-for="@Model.Detalles[i].horas" class="form-control" type="number" step="0.01" />
-                        <span asp-validation-for="@Model.Detalles[i].horas" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input asp-for="@Model.Detalles[i].monto" class="form-control" type="number" step="0.01" />
-                        <span asp-validation-for="@Model.Detalles[i].monto" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input value="@(Model.Detalles[i].monto * 0.13m)" class="form-control" readonly />
-                    </td>
-                    <td>
-                        <input value="@(Model.Detalles[i].monto + Model.Detalles[i].monto * 0.13m)" class="form-control" readonly />
-                    </td>
-                    <td>
-                        <input asp-for="@Model.Detalles[i].observaciones" class="form-control" />
-                        <span asp-validation-for="@Model.Detalles[i].observaciones" class="text-danger"></span>
-                    </td>
-                    <td>
-                        <input asp-for="@Model.Detalles[i].porcentaje_cobro" class="form-control" type="number" step="0.01" min="0" max="100" />
-                        <span asp-validation-for="@Model.Detalles[i].porcentaje_cobro" class="text-danger"></span>
-                    </td>
-                </tr>
+                <li>@error.ErrorMessage</li>
             }
-        </tbody>
-    </table>
+        </ul>
+    </div>
+}
 
-    <button type="submit" class="btn btn-success mt-3">Confirmar</button>
-    <a asp-page="/Solicitudes/DetalleSolicitud" asp-route-id="@Model.Propuesta.id_solicitud" class="btn btn-secondary ms-2 mt-3">Cancelar</a>
-    <a asp-page="/CMS/EXT5" class="btn btn-info ms-2 mt-3">Cargar Excel</a>
+<form method="post">
+
+    <!-- Proveedor -->
+    <div class="card mb-3 p-3 shadow-sm">
+        <h5>Proveedor</h5>
+
+        <div class="mb-3">
+            <label asp-for="Proveedor.cedula_juridica" class="form-label"></label>
+            <input asp-for="Proveedor.cedula_juridica" class="form-control" />
+            <span asp-validation-for="Proveedor.cedula_juridica" class="text-danger"></span>
+        </div>
+
+        <button type="submit" asp-page-handler="ValidarProveedor" formnovalidate class="btn btn-primary">
+            Validar Proveedor
+        </button>
+
+        <div class="mb-3">
+            <label asp-for="Proveedor.nombre" class="form-label">Nombre del proveedor</label>
+            <input asp-for="Proveedor.nombre" class="form-control" readonly />
+        </div>
+    </div>
+
+    <!-- Detalles -->
+    <div class="card mb-3 p-3 shadow-sm">
+        <h5>Detalles de Propuesta</h5>
+
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Mes</th>
+                    <th>Año</th>
+                    <th>Horas</th>
+                    <th>Monto</th>
+                    <th>IVA (13%)</th>
+                    <th>Total</th>
+                    <th>Observaciones</th>
+                    <th>% Cobro</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Detalles.Count; i++)
+                {
+                    <tr>
+                        <input type="hidden" asp-for="Propuesta.id_solicitud" />
+
+                        <td>
+                            <input asp-for="Detalles[@i].mes" class="form-control" />
+                            <span asp-validation-for="Detalles[@i].mes" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <input asp-for="Detalles[@i].anio" class="form-control" />
+                            <span asp-validation-for="Detalles[@i].anio" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <input asp-for="Detalles[@i].horas" class="form-control" />
+                            <span asp-validation-for="Detalles[@i].horas" class="text-danger"></span>
+                        </td>
+                        <td>
+                            <input asp-for="Detalles[@i].monto" class="form-control monto-input" data-index="@i" oninput="actualizarIvaYTotal(@i)" />
+                            <span asp-validation-for="Detalles[@i].monto" class="text-danger"></span>
+                        </td>
+                        <td id="iva-@i">
+                            @Model.Detalles[i].iva.ToString("0.00")
+                        </td>
+                        <td id="total-@i">
+                            @Model.Detalles[i].total.ToString("0.00")
+                        </td>
+                        <td>
+                            <input asp-for="Detalles[@i].observaciones" class="form-control" />
+                        </td>
+                        <td>
+                            <input asp-for="Detalles[@i].porcentaje_cobro" class="form-control" />
+                            <span asp-validation-for="Detalles[@i].porcentaje_cobro" class="text-danger"></span>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" asp-page-handler="Confirmar" class="btn btn-success">Confirmar</button>
+        <button type="submit" asp-page-handler="Cancelar" class="btn btn-secondary ms-2">Cancelar</button>
+        <button type="submit" asp-page-handler="CargarExcel" class="btn btn-outline-primary ms-2">Cargar Excel</button>
+    </div>
 </form>
+
+@if (Model.MostrarModalCrearProveedor)
+{
+    <div class="modal fade show" id="modalCrearProveedor" tabindex="-1" style="display:block;" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form method="post" asp-page-handler="CrearProveedor">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Crear nuevo proveedor</h5>
+                        <button type="button" class="btn-close" onclick="cerrarModal()" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+
+                        <div class="mb-3">
+                            <label asp-for="Proveedor.cedula_juridica" class="form-label">Cédula Jurídica</label>
+                            <input asp-for="Proveedor.cedula_juridica" class="form-control" readonly />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Proveedor.nombre" class="form-label">Nombre del proveedor</label>
+                            <input asp-for="Proveedor.nombre" class="form-control" />
+                            <span asp-validation-for="Proveedor.nombre" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Proveedor.nombre_representante" class="form-label"></label>
+                            <input asp-for="Proveedor.nombre_representante" class="form-control" />
+                            <span asp-validation-for="Proveedor.nombre_representante" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Proveedor.telefono" class="form-label"></label>
+                            <input asp-for="Proveedor.telefono" class="form-control" />
+                            <span asp-validation-for="Proveedor.telefono" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Proveedor.correo_electronico" class="form-label"></label>
+                            <input asp-for="Proveedor.correo_electronico" class="form-control" />
+                            <span asp-validation-for="Proveedor.correo_electronico" class="text-danger"></span>
+                        </div>
+
+                        @if (Model.Proveedor.id_proveedor > 0)
+                        {
+                            <div class="alert alert-success mt-3">
+                                ID Proveedor asignado: <strong>@Model.Proveedor.id_proveedor</strong>
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Guardar Proveedor</button>
+                        <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-backdrop fade show"></div>
+
+    <script>
+        function cerrarModal() {
+            window.location.href = window.location.pathname + "?id=@Model.Propuesta.id_solicitud";
+        }
+    </script>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        function actualizarIvaYTotal(index) {
+            const montoInput = document.querySelector(`input[data-index='${index}']`);
+            let monto = parseFloat(montoInput.value);
+
+            if (isNaN(monto) || monto < 0) {
+                monto = 0;
+            }
+
+            const iva = monto * 0.13;
+            const total = monto + iva;
+
+            document.getElementById(`iva-${index}`).innerText = iva.toFixed(2);
+            document.getElementById(`total-${index}`).innerText = total.toFixed(2);
+        }
+
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.monto-input').forEach((input, idx) => {
+                actualizarIvaYTotal(idx);
+            });
+        });
+    </script>
 }

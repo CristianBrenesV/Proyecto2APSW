@@ -39,15 +39,19 @@ namespace SistemaSolicitudesLaDat.Repository.Solicitudes
             parameters.Add("p_nombre", proveedor.nombre);
             parameters.Add("p_nombre_representante", proveedor.nombre_representante);
             parameters.Add("p_telefono", proveedor.telefono);
-            parameters.Add("p_correo", proveedor.correo_electronico);
+            parameters.Add("p_correo_electronico", proveedor.correo_electronico);
 
-            // Supongamos que el SP devuelve el id_proveedor insertado con SELECT LAST_INSERT_ID();
-            int nuevoId = await connection.ExecuteScalarAsync<int>(
+            parameters.Add("p_id_proveedor", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+            await connection.ExecuteAsync(
                 "InsertarProveedor",
                 parameters,
                 commandType: CommandType.StoredProcedure);
 
+            int nuevoId = parameters.Get<int>("p_id_proveedor");
+
             return nuevoId;
         }
+
     }
 }
