@@ -19,122 +19,89 @@ namespace SistemaSolicitudesLaDat.Pages.CMS
             _propuestaService = propuestaService;
         }
 
-        public class ProveedorInputModel
-        {
-            [Required(ErrorMessage = "Cédula jurídica es requerida")]
-            [RegularExpression(@"^\d{9,12}$", ErrorMessage = "Formato de cédula jurídica inválido")]
-            public string CedulaJuridica { get; set; } = null!;
-
-            [Required(ErrorMessage = "Nombre del proveedor es requerido")]
-            public string Nombre { get; set; } = null!;
-
-            [Required(ErrorMessage = "Nombre del representante es requerido")]
-            public string NombreRepresentante { get; set; } = null!;
-
-            [Required(ErrorMessage = "Teléfono de contacto es requerido")]
-            public string TelefonoContacto { get; set; } = null!;
-
-            [Required(ErrorMessage = "Correo electrónico es requerido")]
-            [EmailAddress(ErrorMessage = "Correo electrónico inválido")]
-            public string CorreoContacto { get; set; } = null!;
-        }
-
         [BindProperty]
         public Propuesta Propuesta { get; set; } = new Propuesta();
 
         [BindProperty]
-        public List<DetallePropuesta> Detalles { get; set; } = new List<DetallePropuesta> { new DetallePropuesta() };
+        public Proveedor Proveedor { get; set; } = new Proveedor();
 
         [BindProperty]
-        public ProveedorInputModel ProveedorInput { get; set; } = new ProveedorInputModel();
-
-        public bool ProveedorExiste { get; set; } = false;
-
-        public bool VerModalCrearProveedor { get; set; } = false;
+        public List<DetallePropuesta> Detalles { get; set; } = new List<DetallePropuesta> { new DetallePropuesta() };
 
         public void OnGet(string id)
         {
             Propuesta.id_solicitud = id;
         }
 
-        public async Task<IActionResult> OnPostAsync(string action)
+        public async Task<IActionResult> OnPostAsync()
         {
-            if (action == "verificar")
+            // Validar datos básicos del proveedor (puedes agregar validaciones personalizadas si quieres)
+            if (string.IsNullOrWhiteSpace(Proveedor.cedula_juridica) || !System.Text.RegularExpressions.Regex.IsMatch(Proveedor.cedula_juridica, @"^\d{9,12}$"))
             {
-                // Validar solo la cédula jurídica para verificación
-                if (!TryValidateModel(ProveedorInput, nameof(ProveedorInput)))
+                ModelState.AddModelError("Proveedor.cedula_juridica", "La cédula jurídica es requerida y debe tener entre 9 y 12 dígitos.");
+            }
+
+            if (string.IsNullOrWhiteSpace(Proveedor.nombre))
+                ModelState.AddModelError("Proveedor.nombre", "El nombre del proveedor es requerido.");
+
+            if (string.IsNullOrWhiteSpace(Proveedor.nombre_representante))
+                ModelState.AddModelError("Proveedor.nombre_representante", "El nombre del representante es requerido.");
+
+            if (string.IsNullOrWhiteSpace(Proveedor.telefono))
+                ModelState.AddModelError("Proveedor.telefono", "El teléfono de contacto es requerido.");
+
+            if (string.IsNullOrWhiteSpace(Proveedor.correo_electronico) || !new EmailAddressAttribute().IsValid(Proveedor.correo_electronico))
+                ModelState.AddModelError("Proveedor.correo_electronico", "El correo electrónico es requerido y debe ser válido.");
+
+            // Validar detalles de la propuesta
+            if (Detalles == null || Detalles.Count == 0)
+            {
+                ModelState.AddModelError(string.Empty, "Debe agregar al menos un detalle de propuesta.");
+            }
+            else
+            {
+                for (int i = 0; i < Detalles.Count; i++)
                 {
-                    ModelState.ClearValidationState(nameof(ProveedorInput));
-                    TryValidateModel(ProveedorInput.CedulaJuridica, nameof(ProveedorInput.CedulaJuridica));
-                    return Page();
+                    var d = Detalles[i];
+                    if (d.mes < 1 || d.mes > 12)
+                        ModelState.AddModelError($"Detalles[{i}].mes", "Mes debe estar entre 1 y 12.");
+                    if (d.anio < 2000)
+                        ModelState.AddModelError($"Detalles[{i}].anio", "Año debe ser válido.");
+                    if (d.horas <= 0)
+                        ModelState.AddModelError($"Detalles[{i}].horas", "Horas deben ser mayores a cero.");
+                    if (d.monto <= 0)
+                        ModelState.AddModelError($"Detalles[{i}].monto", "Monto debe ser mayor a cero.");
+                    if (string.IsNullOrWhiteSpace(d.observaciones))
+                        ModelState.AddModelError($"Detalles[{i}].observaciones", "Observaciones son requeridas.");
+                    if (d.porcentaje_cobro < 0 || d.porcentaje_cobro > 100)
+                        ModelState.AddModelError($"Detalles[{i}].porcentaje_cobro", "Porcentaje de cobro debe estar entre 0 y 100.");
                 }
+            }
 
-                var proveedorExistente = await _proveedorService.ObtenerPorCedulaAsync(ProveedorInput.CedulaJuridica);
-
-                if (proveedorExistente != null)
-                {
-                    ProveedorExiste = true;
-
-                    ProveedorInput.Nombre = proveedorExistente.nombre;
-                    ProveedorInput.NombreRepresentante = proveedorExistente.nombre_representante;
-                    ProveedorInput.TelefonoContacto = proveedorExistente.telefono;
-                    ProveedorInput.CorreoContacto = proveedorExistente.correo_electronico;
-                    Propuesta.id_proveedor = proveedorExistente.id_proveedor;
-                }
-                else
-                {
-                    ProveedorExiste = false;
-                    VerModalCrearProveedor = true;
-                }
-
+            if (!ModelState.IsValid)
+            {
                 return Page();
             }
-            else if (action == "crearProveedor")
+
+            // Revisar si proveedor existe
+            var proveedorExistente = await _proveedorService.ObtenerPorCedulaAsync(Proveedor.cedula_juridica);
+
+            if (proveedorExistente == null)
             {
-                // Validar todos los campos del proveedor para crear
-                if (!ModelState.IsValid)
-                {
-                    VerModalCrearProveedor = true;
-                    return Page();
-                }
-
-                var nuevoProveedor = new Proveedor
-                {
-                    cedula_juridica = ProveedorInput.CedulaJuridica,
-                    nombre = ProveedorInput.Nombre,
-                    nombre_representante = ProveedorInput.NombreRepresentante,
-                    telefono = ProveedorInput.TelefonoContacto,
-                    correo_electronico = ProveedorInput.CorreoContacto
-                };
-
-                var proveedorCreado = await _proveedorService.ObtenerOInsertarProveedorAsync(nuevoProveedor);
-
-                Propuesta.id_proveedor = proveedorCreado.id_proveedor;
-
-                ProveedorExiste = true;
-                VerModalCrearProveedor = false;
-
-                return Page();
+                // Crear nuevo proveedor
+                var nuevoId = await _proveedorService.ObtenerOInsertarProveedorAsync(Proveedor);
+                Propuesta.id_proveedor = nuevoId.id_proveedor;
             }
-            else if (action == "guardar")
+            else
             {
-                if (!ProveedorExiste)
-                {
-                    ModelState.AddModelError("", "Debe verificar o crear un proveedor antes de guardar.");
-                    return Page();
-                }
-
-                if (!ModelState.IsValid)
-                    return Page();
-
-                await _propuestaService.RegistrarPropuestaConDetallesAsync(Propuesta, Detalles);
-
-                TempData["Mensaje"] = "Propuesta registrada exitosamente.";
-
-                return RedirectToPage("/Solicitudes/DetalleSolicitud", new { id = Propuesta.id_solicitud });
+                Propuesta.id_proveedor = proveedorExistente.id_proveedor;
             }
 
-            return Page();
+            await _propuestaService.RegistrarPropuestaConDetallesAsync(Propuesta, Detalles);
+
+            TempData["Mensaje"] = "Propuesta registrada exitosamente.";
+
+            return RedirectToPage("/Solicitudes/DetalleSolicitud", new { id = Propuesta.id_solicitud });
         }
     }
 }

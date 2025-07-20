@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MySql.Data.MySqlClient;
 using SistemaSolicitudesLaDat.Entities.Solicitudes;
 using SistemaSolicitudesLaDat.Repository.Infrastructure;
 using System;
@@ -34,6 +35,54 @@ namespace SistemaSolicitudesLaDat.Repository.Solicitudes
                 commandType: CommandType.StoredProcedure);
 
             return nuevoId;
+        }
+        public async Task<List<PropuestaConProveedor>> ObtenerPropuestasConProveedorPorSolicitudAsync(string idSolicitud)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var resultado = await connection.QueryAsync<PropuestaConProveedor>(
+                "ObtenerPropuestasPorSolicitud",
+                new { p_idSolicitud = idSolicitud },
+                commandType: CommandType.StoredProcedure
+            );
+
+            return resultado.AsList();
+        }
+
+        public async Task<string?> ObtenerIdSolicitudPorPropuestaAsync(int idPropuesta)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var resultado = await connection.QueryFirstOrDefaultAsync<string>(
+                "ObtenerIdSolicitudPorPropuesta",
+                new { p_idPropuesta = idPropuesta },
+                commandType: CommandType.StoredProcedure);
+
+            return resultado;
+        }
+
+        public async Task<bool> ExistePropuestaAprobadaAsync(string idSolicitud)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var cantidad = await connection.ExecuteScalarAsync<int>(
+                "ExistePropuestaAprobada",
+                new { p_idSolicitud = idSolicitud },
+                commandType: CommandType.StoredProcedure);
+
+            return cantidad > 0;
+        }
+
+        public async Task<bool> MarcarPropuestaComoAprobadaAsync(int idPropuesta)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var filas = await connection.ExecuteAsync(
+                "MarcarPropuestaComoAprobada",
+                new { p_idPropuesta = idPropuesta },
+                commandType: CommandType.StoredProcedure);
+
+            return filas > 0;
         }
     }
 }

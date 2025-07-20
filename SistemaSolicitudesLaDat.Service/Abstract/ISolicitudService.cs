@@ -19,7 +19,7 @@ namespace SistemaSolicitudesLaDat.Service.Abstract
         Task<int> MarcarSolicitudesVencidasAsync(string idEstadoVencida);
         Task PublicarAsync(Solicitud solicitud, string usuarioEjecutoro);
         Task<(List<Solicitud> solicitudes, int totalRegistros)> ObtenerSolicitudesPublicadasAsync(int paginaActual, int pageSize);
-        Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud);
-
+        public Task<List<SolicitudResumen>> ObtenerSolicitudesPorProveedorAsync(int idProveedor);
+        public Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud);
     }
 }

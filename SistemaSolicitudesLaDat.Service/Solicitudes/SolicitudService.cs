@@ -155,6 +155,20 @@ namespace SistemaSolicitudesLaDat.Service.Solicitudes
         {
             return await _solicitudRepository.ObtenerSolicitudesPublicadasAsync(paginaActual, pageSize);
         }
+        public async Task<List<SolicitudResumen>> ObtenerSolicitudesPorProveedorAsync(int idProveedor)
+        {
+            // Lógica para consultar en base de datos las solicitudes donde participó el proveedor
+            // Por ejemplo, consulta que une Propuestas con Solicitudes y filtra por idProveedor
+
+            var resultados = await _solicitudRepository.ObtenerSolicitudesPorProveedorAsync(idProveedor);
+
+            // Mapear resultados a SolicitudResumen (si no viene directo así)
+            return resultados.Select(s => new SolicitudResumen
+            {
+                consecutivo_oficio = s.consecutivo_oficio,
+                titulo_solicitud = s.titulo_solicitud
+            }).ToList();
+        }
 
         public async Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud)
         {

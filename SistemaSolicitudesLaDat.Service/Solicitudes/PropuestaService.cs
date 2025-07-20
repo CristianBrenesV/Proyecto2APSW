@@ -29,5 +29,33 @@ namespace SistemaSolicitudesLaDat.Services
 
             return idPropuesta;
         }
+
+        public async Task<List<PropuestaConProveedor>> ObtenerPropuestasConProveedorPorSolicitudAsync(string idSolicitud)
+        {
+            return await _propuestaRepository.ObtenerPropuestasConProveedorPorSolicitudAsync(idSolicitud);
+        }
+
+        public async Task<string?> ObtenerIdSolicitudPorPropuestaAsync(int idPropuesta)
+        {
+            return await _propuestaRepository.ObtenerIdSolicitudPorPropuestaAsync(idPropuesta);
+        }
+
+        public async Task<bool> ExistePropuestaAprobadaAsync(string idSolicitud)
+        {
+            return await _propuestaRepository.ExistePropuestaAprobadaAsync(idSolicitud);
+        }
+
+        public async Task<bool> AprobarPropuestaAsync(int idPropuesta)
+        {
+            var idSolicitud = await ObtenerIdSolicitudPorPropuestaAsync(idPropuesta);
+            if (string.IsNullOrEmpty(idSolicitud))
+                return false;
+
+            bool existeAprobada = await ExistePropuestaAprobadaAsync(idSolicitud);
+            if (existeAprobada)
+                return false;
+
+            return await _propuestaRepository.MarcarPropuestaComoAprobadaAsync(idPropuesta);
+        }
     }
 }

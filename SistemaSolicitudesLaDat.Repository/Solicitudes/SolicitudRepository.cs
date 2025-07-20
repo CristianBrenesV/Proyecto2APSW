@@ -158,6 +158,32 @@ namespace SistemaSolicitudesLaDat.Repository.Solicitudes
             return (solicitudes, totalRegistros);
         }
 
+        public async Task<List<Solicitud>> ObtenerSolicitudesPorCedulaAsync(string cedulaJuridica)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            // Asumiendo que el SP retorna sólo un conjunto de Solicitud
+            var solicitudes = await connection.QueryAsync<Solicitud>(
+                "ObtenerSolicitudesPorCedulaProveedor",
+                new { CedulaJuridica = cedulaJuridica },
+                commandType: CommandType.StoredProcedure);
+
+            return solicitudes.ToList();
+        }
+
+        public async Task<List<SolicitudResumen>> ObtenerSolicitudesPorProveedorAsync(int idProveedor)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var resultado = await connection.QueryAsync<SolicitudResumen>(
+                "ObtenerSolicitudesPorProveedor",
+                new { idProveedor = idProveedor }, // mismo nombre que en el SP
+                commandType: CommandType.StoredProcedure);
+
+            return resultado.ToList();
+        }
+
+
         public async Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
@@ -172,6 +198,7 @@ namespace SistemaSolicitudesLaDat.Repository.Solicitudes
 
             return (solicitud, estados, representantes);
         }
+
         public async Task<bool> TieneRelacionAsync(string id)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
@@ -184,6 +211,7 @@ namespace SistemaSolicitudesLaDat.Repository.Solicitudes
 
             return parameters.Get<bool>("p_TieneRelacion");
         }
+
 
         public async Task<bool> DeleteAsync(Solicitud solicitud)
         {

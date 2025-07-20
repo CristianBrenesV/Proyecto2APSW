@@ -11,5 +11,12 @@ namespace SistemaSolicitudesLaDat.Service.Abstract
     {
         Task<int> RegistrarPropuestaConDetallesAsync(Propuesta propuesta, List<DetallePropuesta> detalles);
 
+        Task<List<PropuestaConProveedor>> ObtenerPropuestasConProveedorPorSolicitudAsync(string idSolicitud);
+
+        Task<string?> ObtenerIdSolicitudPorPropuestaAsync(int idPropuesta);
+
+        Task<bool> AprobarPropuestaAsync(int idPropuesta);
+
+        Task<bool> ExistePropuestaAprobadaAsync(string idSolicitud);
     }
 }
