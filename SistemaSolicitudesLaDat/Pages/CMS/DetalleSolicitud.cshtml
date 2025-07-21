@@ -2,106 +2,113 @@
 @model SistemaSolicitudesLaDat.Pages.CMS.DetalleSolicitudModel
 @{
 	ViewData["Title"] = "Detalle de Solicitud";
-	Layout = "_PrincipalLayout";
+	Layout = "_CMSLayout";
 }
 
 <h2>Detalle de Solicitud</h2>
 
+    <div class="card-body">
+        <table class="table table-striped table-bordered text-light">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Campo</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Consecutivo de oficio</th>
+                    <td>@Model.Solicitud.consecutivo_oficio</td>
+                </tr>
+                <tr>
+                    <th>Documento de respuesta</th>
+                    <td>
+                        @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.documento_respuesta)
+                                                ? Model.Solicitud.documento_respuesta
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Documento de inicio</th>
+                    <td>
+                        @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.documento_inicio)
+                                                ? Model.Solicitud.documento_inicio
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Título de la solicitud</th>
+                    <td>@Model.Solicitud.titulo_solicitud</td>
+                </tr>
+                <tr>
+                    <th>Descripción</th>
+                    <td>
+                        @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.descripcion)
+                                                ? Model.Solicitud.descripcion
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Representante</th>
+                    <td>
+                        @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.RepresentanteNombre)
+                                                ? Model.Solicitud.RepresentanteNombre
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Observaciones</th>
+                    <td>
+                        @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.observaciones)
+                                                ? Model.Solicitud.observaciones
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Estado de la solicitud</th>
+                    <td>
+                        @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.EstadoNombre)
+                                                ? Model.Solicitud.EstadoNombre
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Fecha de ingreso</th>
+                    <td>
+                        @Html.Raw(Model.Solicitud.fecha_ingreso != null
+                                                ? Model.Solicitud.fecha_ingreso.Value.ToString("dd/MM/yyyy")
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Fecha de respuesta</th>
+                    <td>
+                        @Html.Raw(Model.Solicitud.fecha_respuesta != null
+                                                ? Model.Solicitud.fecha_respuesta.Value.ToString("dd/MM/yyyy")
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Fecha de inicio</th>
+                    <td>
+                        @Html.Raw(Model.Solicitud.fecha_inicio != null
+                                                ? Model.Solicitud.fecha_inicio.Value.ToString("dd/MM/yyyy")
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+                <tr>
+                    <th>Fecha de vencimiento de la publicación</th>
+                    <td>
+                        @Html.Raw(Model.Solicitud.fecha_vencimiento_publicacion != null
+                                                ? Model.Solicitud.fecha_vencimiento_publicacion.Value.ToString("dd/MM/yyyy")
+                                                : "<em>&lt;No indicado&gt;</em>")
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
 <div class="mt-3">
     <a asp-page="/CMS/SolicitudesPublicadas" class="btn btn-secondary">Regresar</a>
     <a asp-page="/CMS/PropuestaSolicitud" asp-route-id="@Model.Solicitud.id_solicitud" class="btn btn-dark">Participar</a>
-
 </div>
-
-<table class="table table-bordered">
-    <tbody>
-        <tr>
-            <th>Consecutivo de oficio</th>
-            <td>@Model.Solicitud.consecutivo_oficio</td>
-        </tr>
-        <tr>
-            <th>Documento de respuesta</th>
-            <td>
-                @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.documento_respuesta)
-                                ? Model.Solicitud.documento_respuesta
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-        <tr>
-            <th>Documento de inicio</th>
-            <td>
-                @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.documento_inicio)
-                                ? Model.Solicitud.documento_inicio
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-        <tr>
-            <th>Título de la solicitud</th>
-            <td>@Model.Solicitud.titulo_solicitud</td>
-        </tr>
-        <tr>
-            <th>Descripción</th>
-            <td>
-                @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.descripcion)
-                                ? Model.Solicitud.descripcion
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-        <tr>
-            <th>Representante</th>
-            <td>
-                @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.RepresentanteNombre)
-                                ? Model.Solicitud.RepresentanteNombre
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-        <tr>
-            <th>Observaciones</th>
-            <td>
-                @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.observaciones)
-                                ? Model.Solicitud.observaciones
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-        <tr>
-            <th>Estado de la solicitud</th>
-            <td>
-                @Html.Raw(!string.IsNullOrWhiteSpace(Model.Solicitud.EstadoNombre)
-                                ? Model.Solicitud.EstadoNombre
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-        <tr>
-            <th>Fecha de ingreso</th>
-            <td>
-                @Html.Raw(Model.Solicitud.fecha_ingreso != null
-                                ? Model.Solicitud.fecha_ingreso.Value.ToString("dd/MM/yyyy")
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-        <tr>
-            <th>Fecha de respuesta</th>
-            <td>
-                @Html.Raw(Model.Solicitud.fecha_respuesta != null
-                                ? Model.Solicitud.fecha_respuesta.Value.ToString("dd/MM/yyyy")
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-        <tr>
-            <th>Fecha de inicio</th>
-            <td>
-                @Html.Raw(Model.Solicitud.fecha_inicio != null
-                                ? Model.Solicitud.fecha_inicio.Value.ToString("dd/MM/yyyy")
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-        <tr>
-            <th>Fecha de vencimiento de la publicación</th>
-            <td>
-                @Html.Raw(Model.Solicitud.fecha_vencimiento_publicacion != null
-                                ? Model.Solicitud.fecha_vencimiento_publicacion.Value.ToString("dd/MM/yyyy")
-                                : "<em>&lt;No indicado&gt;</em>")
-            </td>
-        </tr>
-    </tbody>
-</table>

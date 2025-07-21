@@ -2,7 +2,7 @@
 @model SistemaSolicitudesLaDat.Pages.CMS.PropuestaSolicitudModel
 @{
     ViewData["Title"] = "Proponer a solicitud";
-    Layout = "_PrincipalLayout";
+    Layout = "_CMSLayout";
 }
 <style>
     .field-validation-valid {
@@ -10,7 +10,7 @@
     }
 </style>
 
-<h1 class="mt-4">Proponer a Solicitud @Model.Propuesta.id_solicitud</h1>
+<h1 class="mt-4 text-black">Proponer a Solicitud @Model.Propuesta.id_solicitud</h1>
 
 @if (!string.IsNullOrEmpty(Model.Mensaje))
 {
@@ -30,8 +30,6 @@
 }
 
 <form method="post">
-
-    <!-- Proveedor -->
     <div class="card mb-3 p-3 shadow-sm">
         <h5>Proveedor</h5>
 
@@ -41,7 +39,7 @@
             <span asp-validation-for="Proveedor.cedula_juridica" class="text-danger"></span>
         </div>
 
-        <button type="submit" asp-page-handler="ValidarProveedor" formnovalidate class="btn btn-primary">
+        <button type="submit" asp-page-handler="ValidarProveedor" formnovalidate class="btn btn-secondary">
             Validar Proveedor
         </button>
 
@@ -51,7 +49,6 @@
         </div>
     </div>
 
-    <!-- Detalles -->
     <div class="card mb-3 p-3 shadow-sm">
         <h5>Detalles de Propuesta</h5>
 
@@ -110,9 +107,11 @@
     </div>
 
     <div class="mb-3">
-        <button type="submit" asp-page-handler="Confirmar" class="btn btn-success">Confirmar</button>
-        <button type="submit" asp-page-handler="Cancelar" class="btn btn-secondary ms-2">Cancelar</button>
-        <button type="submit" asp-page-handler="CargarExcel" class="btn btn-outline-primary ms-2">Cargar Excel</button>
+        <button type="submit" asp-page-handler="Confirmar" class="btn btn-dark">Confirmar</button>
+
+        <button type="submit" asp-page-handler="Cancelar" class="btn btn-outline-secondary ms-2">Cancelar</button>
+
+        <button type="submit" asp-page-handler="CargarExcel" class="btn btn-outline-dark ms-2">Cargar Excel</button>
     </div>
 </form>
 
@@ -165,8 +164,8 @@
                         }
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Guardar Proveedor</button>
-                        <button type="button" class="btn btn-secondary" onclick="cerrarModal()">Cancelar</button>
+                        <button type="submit" class="btn btn-dark">Guardar Proveedor</button>
+                        <button type="button" class="btn btn-outline-secondary" onclick="cerrarModal()">Cancelar</button>
                     </div>
                 </form>
             </div>

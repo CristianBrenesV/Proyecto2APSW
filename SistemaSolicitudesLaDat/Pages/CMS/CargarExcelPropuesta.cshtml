@@ -2,7 +2,7 @@
 @model SistemaSolicitudesLaDat.Pages.CMS.CargarExcelPropuestaModel
 @{
     ViewData["Title"] = "Cargar propuesta desde Excel";
-    Layout = "_PrincipalLayout";
+    Layout = "_CMSLayout";
 }
 
 <h2>Cargar propuesta desde Excel</h2>
@@ -18,6 +18,6 @@
         <input type="file" id="ArchivoExcel" name="ArchivoExcel" class="form-control" accept=".xlsx" required />
     </div>
 
-    <button type="submit" class="btn btn-primary">Cargar</button>
+    <button type="submit" class="btn btn-dark">Cargar</button>
     <a asp-page="/CMS/PropuestaSolicitud" class="btn btn-secondary">Cancelar</a>
 </form>

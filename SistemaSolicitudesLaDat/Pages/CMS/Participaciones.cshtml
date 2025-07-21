@@ -2,7 +2,7 @@
 @model SistemaSolicitudesLaDat.Pages.CMS.ParticipacionesModel
 @{
     ViewData["Title"] = "Mis Participaciones";
-    Layout = "_PrincipalLayout";
+    Layout = "_CMSLayout";
 }
 
 <h1>Mis Participaciones</h1>
@@ -13,7 +13,7 @@
         <input asp-for="CedulaJuridica" class="form-control" id="cedulaJuridica" />
         <span asp-validation-for="CedulaJuridica" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Buscar</button>
+    <button type="submit" class="btn btn-dark">Buscar</button>
 </form>
 
 @if (Model.Mensaje != null)
