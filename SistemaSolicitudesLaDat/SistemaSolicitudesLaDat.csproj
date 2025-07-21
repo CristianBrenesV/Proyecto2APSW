@@ -11,6 +11,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.105.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SistemaSolicitudesLaDat.Entities\SistemaSolicitudesLaDat.Entities.csproj" />
     <ProjectReference Include="..\SistemaSolicitudesLaDat.Repository\SistemaSolicitudesLaDat.Repository.csproj" />
     <ProjectReference Include="..\SistemaSolicitudesLaDat.Service\SistemaSolicitudesLaDat.Service.csproj" />

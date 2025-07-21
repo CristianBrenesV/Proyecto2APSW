@@ -1,0 +1,67 @@
+﻿@page
+@model SistemaSolicitudesLaDat.Pages.CMS.SolicitudesPublicadasModel
+@{
+    ViewData["Title"] = "Solicitudes publicadas";
+    Layout = "_CMSLayout";
+}
+<h1 class="mt-4">Solicitudes Publicadas</h1>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Consecutivo de Oficio</th>
+                <th>Título</th>
+                <th>Representante</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Solicitudes.Any())
+            {
+                <tr>
+                    <td colspan="3" class="text-center">No hay solicitudes publicadas actualmente.</td>
+                </tr>
+            }
+            else
+            {
+                foreach (var s in Model.Solicitudes)
+                {
+                    <tr>
+                        <td>
+                            <a asp-page="/CMS/DetalleSolicitud" asp-route-id="@s.id_solicitud">
+                                @s.consecutivo_oficio
+                            </a>
+                        </td>
+                        <td>@s.titulo_solicitud</td>
+                        <td>@(string.IsNullOrWhiteSpace(s.RepresentanteNombre) ? "N/D" : s.RepresentanteNombre)</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<nav aria-label="Paginación de solicitudes" class="mt-4">
+    <ul class="pagination pagination-dark justify-content-center">
+        @if (Model.Pagina > 1)
+        {
+            <li class="page-item">
+                <a class="page-link text-white bg-dark" asp-route-pagina="@(Model.Pagina - 1)">Anterior</a>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.TotalPaginas; i++)
+        {
+            <li class="page-item @(i == Model.Pagina ? "active" : "")">
+                <a class="page-link text-white bg-dark" asp-route-pagina="@i">@i</a>
+            </li>
+        }
+
+        @if (Model.Pagina < Model.TotalPaginas)
+        {
+            <li class="page-item">
+                <a class="page-link text-white bg-dark" asp-route-pagina="@(Model.Pagina + 1)">Siguiente</a>
+            </li>
+        }
+    </ul>
+</nav>

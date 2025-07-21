@@ -1,0 +1,50 @@
+﻿@page
+@model SistemaSolicitudesLaDat.Pages.CMS.ParticipacionesModel
+@{
+    ViewData["Title"] = "Mis Participaciones";
+    Layout = "_CMSLayout";
+}
+
+<h1>Mis Participaciones</h1>
+
+<form method="post" class="mb-3">
+    <div class="mb-3">
+        <label for="cedulaJuridica" class="form-label">Cédula Jurídica del Proveedor</label>
+        <input asp-for="CedulaJuridica" class="form-control" id="cedulaJuridica" />
+        <span asp-validation-for="CedulaJuridica" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-dark">Buscar</button>
+</form>
+
+@if (Model.Mensaje != null)
+{
+    <div class="alert alert-info">@Model.Mensaje</div>
+}
+else if (Model.Participaciones != null && Model.Participaciones.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Consecutivo Oficio</th>
+                <th>Título de la Solicitud</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Participaciones)
+            {
+                <tr>
+                    <td>@item.consecutivo_oficio</td>
+                    <td>@item.titulo_solicitud</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else if (Model.Participaciones != null)
+{
+    <div>No se encontraron solicitudes para este proveedor.</div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

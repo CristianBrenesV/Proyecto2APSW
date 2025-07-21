@@ -1,0 +1,44 @@
+﻿@page
+@model SistemaSolicitudesLaDat.Pages.Solicitudes.DetalleParticipacionesModel
+@{
+	ViewData["Title"] = "Detalle de participaciones";
+	Layout = "_PrincipalLayout";
+}
+
+<h2>Participaciones para solicitud @Model.IdSolicitud</h2>
+
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-info">@TempData["Info"]</div>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Identificación</th>
+            <th>Nombre Proveedor</th>
+            <th>Aprobar</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Participaciones)
+        {
+            <tr>
+                <td>
+                    <a asp-page="DetalleDesglose" asp-route-id="@item.id_propuesta">@item.cedula_juridica</a>
+                </td>
+                <td>@item.nombre</td>
+                <td>
+                    <form method="post" asp-page-handler="Aprobar">
+                        <input type="hidden" name="idPropuesta" value="@item.id_propuesta" />
+                        <button type="submit" class="btn btn-dark" @(Model.ExisteAprobada ? "disabled" : "")>
+                            Aprobar
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-page="/Solicitudes/ListarSolicitudes" class="btn btn-secondary">Regresar</a>

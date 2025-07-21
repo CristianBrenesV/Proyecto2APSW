@@ -42,8 +42,14 @@ namespace SistemaSolicitudesLaDat.Entities.Solicitudes
         [Display(Name = "Representante")]
         public string? id_representante { get; set; }
 
+        [Display(Name = "Publica")]
+        public bool es_publicada { get; set; }
+
+        [Display(Name = "Fecha de vencimiento de la publicación.")]
+        public DateTime? fecha_vencimiento_publicacion { get; set; }
+
         //public string? nombre { get; set; }
-       [Display(Name = "Estado de la solicitud")]
+        [Display(Name = "Estado de la solicitud")]
        public string? EstadoNombre { get; set; }
 
         [Display(Name = "Representante")]

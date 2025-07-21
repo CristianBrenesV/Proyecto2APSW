@@ -1,12 +1,14 @@
 ﻿using Dapper;
+using SistemaSolicitudesLaDat.Entities.Representantes;
+using SistemaSolicitudesLaDat.Entities.Solicitudes;
+using SistemaSolicitudesLaDat.Repository.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SistemaSolicitudesLaDat.Entities.Solicitudes;
-using SistemaSolicitudesLaDat.Repository.Infrastructure;
 
 namespace SistemaSolicitudesLaDat.Repository.Solicitudes
 {
@@ -123,6 +125,80 @@ namespace SistemaSolicitudesLaDat.Repository.Solicitudes
                 parameters,
                 commandType: System.Data.CommandType.StoredProcedure);
         }
+        public async Task<int> PublicarAsync(Solicitud solicitud)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            var parameters = new DynamicParameters();
+            parameters.Add("p_id_solicitud", solicitud.id_solicitud);
+            parameters.Add("p_es_publicada", solicitud.es_publicada);
+            parameters.Add("p_fecha_vencimiento_publicacion", solicitud.fecha_vencimiento_publicacion);
+
+            return await connection.ExecuteAsync(
+                "PublicarSolicitud",
+                parameters,
+                commandType: System.Data.CommandType.StoredProcedure);
+        }
+
+        public async Task<(List<Solicitud> solicitudes, int totalRegistros)> ObtenerSolicitudesPublicadasAsync(int paginaActual, int pageSize)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            using var multi = await connection.QueryMultipleAsync(
+                "Listar5SolicitudesPublicadas",
+                new
+                {
+                    p_PaginaActual = paginaActual,
+                    p_pageSize = pageSize
+                },
+                commandType: CommandType.StoredProcedure
+            );
+
+            var solicitudes = (await multi.ReadAsync<Solicitud>()).ToList();
+            var totalRegistros = await multi.ReadFirstAsync<int>();
+
+            return (solicitudes, totalRegistros);
+        }
+
+        public async Task<List<Solicitud>> ObtenerSolicitudesPorCedulaAsync(string cedulaJuridica)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            // Asumiendo que el SP retorna sólo un conjunto de Solicitud
+            var solicitudes = await connection.QueryAsync<Solicitud>(
+                "ObtenerSolicitudesPorCedulaProveedor",
+                new { CedulaJuridica = cedulaJuridica },
+                commandType: CommandType.StoredProcedure);
+
+            return solicitudes.ToList();
+        }
+
+        public async Task<List<SolicitudResumen>> ObtenerSolicitudesPorProveedorAsync(int idProveedor)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var resultado = await connection.QueryAsync<SolicitudResumen>(
+                "ObtenerSolicitudesPorProveedor",
+                new { idProveedor = idProveedor }, // mismo nombre que en el SP
+                commandType: CommandType.StoredProcedure);
+
+            return resultado.ToList();
+        }
+
+
+        public async Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+            using var multi = await connection.QueryMultipleAsync(
+                "ObtenerDetalleSolicitud",
+                new { p_id_solicitud = idSolicitud },
+                commandType: CommandType.StoredProcedure);
+
+            var solicitud = await multi.ReadSingleOrDefaultAsync<Solicitud>();
+            var estados = (await multi.ReadAsync<EstadoSolicitud>()).ToList();
+            var representantes = (await multi.ReadAsync<Representante>()).ToList();
+
+            return (solicitud, estados, representantes);
+        }
+
         public async Task<bool> TieneRelacionAsync(string id)
         {
             using var connection = _dbConnectionFactory.CreateConnection();
@@ -135,6 +211,7 @@ namespace SistemaSolicitudesLaDat.Repository.Solicitudes
 
             return parameters.Get<bool>("p_TieneRelacion");
         }
+
 
         public async Task<bool> DeleteAsync(Solicitud solicitud)
         {

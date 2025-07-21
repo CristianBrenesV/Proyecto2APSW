@@ -1,10 +1,11 @@
-﻿using System;
+﻿using SistemaSolicitudesLaDat.Entities.Representantes;
+using SistemaSolicitudesLaDat.Entities.Solicitudes;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SistemaSolicitudesLaDat.Entities.Solicitudes;
 
 namespace SistemaSolicitudesLaDat.Service.Abstract
 {
@@ -16,6 +17,9 @@ namespace SistemaSolicitudesLaDat.Service.Abstract
         Task<bool> EliminarAsync(Solicitud solicitud, string usuarioEjecutor);
         Task<(IEnumerable<Solicitud> Solicitudes, int Total)> ObtenerSolicitudesPaginadasAsync(int PaginaActual, int pageSize);
         Task<int> MarcarSolicitudesVencidasAsync(string idEstadoVencida);
-
+        Task PublicarAsync(Solicitud solicitud, string usuarioEjecutoro);
+        Task<(List<Solicitud> solicitudes, int totalRegistros)> ObtenerSolicitudesPublicadasAsync(int paginaActual, int pageSize);
+        public Task<List<SolicitudResumen>> ObtenerSolicitudesPorProveedorAsync(int idProveedor);
+        public Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud);
     }
 }

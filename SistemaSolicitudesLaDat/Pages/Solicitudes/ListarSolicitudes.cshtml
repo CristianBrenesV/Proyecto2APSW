@@ -26,6 +26,7 @@
                 <th>Fecha de ingreso</th>
                 <th>Fecha de respuesta</th>
                 <th>Fecha de inicio</th>
+                <th>Fecha de vencimiento de publicación</th>
                 <th>Acciones</th>
             </tr>
         </thead>
@@ -52,6 +53,25 @@
                         <td>@solicitud.fecha_ingreso?.ToString("dd/MM/yyyy")</td>
                         <td>@solicitud.fecha_respuesta?.ToString("dd/MM/yyyy")</td>
                         <td>@solicitud.fecha_inicio?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            <form method="post" asp-page-handler="Publicar" class="d-flex flex-column gap-1 align-items-start">
+                                <input type="hidden" name="IdSolicitud" value="@solicitud.id_solicitud" />
+
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="EsPublicada" id="pub_@solicitud.id_solicitud" value="true"
+                                           @(solicitud.es_publicada ? "checked" : "") />
+                                    <label class="form-check-label" for="pub_@solicitud.id_solicitud">Publicar</label>
+                                </div>
+
+                                <input type="date"
+                                       name="FechaVencimiento"
+                                       class="form-control form-control-sm"
+                                       value="@solicitud.fecha_vencimiento_publicacion?.ToString("dd/MM/yyyy")"
+                                       @(solicitud.es_publicada ? "" : "disabled") />
+
+                                <button type="submit" class="btn btn-sm btn-dark mt-1">Guardar</button>
+                            </form>
+                        </td>
                         <td style="white-space: nowrap;">
                             <a class="btn btn-sm btn-outline-secondary" asp-page="EditarSolicitudes" asp-route-id="@solicitud.id_solicitud">
                                 <i class="fas fa-edit"></i>
@@ -61,6 +81,9 @@
                             </button>
                             <a class="btn btn-sm btn-outline-secondary" asp-page="Desgloses/ListarDesgloses" asp-route-id="@solicitud.id_solicitud">
                                 <i class="fas fa-list"></i>
+                            </a>
+                            <a class="btn btn-sm btn-outline-secondary" asp-page="DetalleParticipaciones" asp-route-id="@solicitud.id_solicitud">
+                                <i class="fas fa-folder-open"></i>
                             </a>
                         </td>
                     </tr>
@@ -136,5 +159,25 @@
             document.getElementById('solicitudIdEliminar').value = idSolicitud;
             document.getElementById('nombreSolicitud').textContent = nombreSolicitud;
         });
+
+                document.querySelectorAll('input[type="checkbox"][name="EsPublicada"]').forEach(cb => {
+            cb.addEventListener('change', function () {
+                const form = cb.closest('form');
+                const fecha = form.querySelector('input[type="date"]');
+                fecha.disabled = !cb.checked;
+
+                // Si se marca, sugerir fecha de vencimiento (+15 días si no hay valor)
+                if (cb.checked && !fecha.value) {
+                    const today = new Date();
+                    today.setDate(today.getDate() + 15);
+                    fecha.value = today.toISOString().split('T')[0];
+                }
+            });
+
+            // Ejecutar al cargar para reflejar el estado inicial
+            cb.dispatchEvent(new Event('change'));
+        });
     </script>
+
+
 }
