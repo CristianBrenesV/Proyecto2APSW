@@ -8,28 +8,83 @@ namespace SistemaSolicitudesLaDat.Services
     public class ProveedorService : IProveedorService
     {
         private readonly ProveedorRepository _proveedorRepository;
+        private readonly IBitacoraService _bitacoraService;
 
-        public ProveedorService(ProveedorRepository proveedorRepository)
+        public ProveedorService(ProveedorRepository proveedorRepository, IBitacoraService bitacoraService)
         {
             _proveedorRepository = proveedorRepository;
+            _bitacoraService = bitacoraService;
         }
-        public async Task<Proveedor?> ObtenerPorCedulaAsync(string cedulaJuridica)
+        public async Task<Proveedor?> ObtenerPorCedulaAsync(string cedulaJuridica, string usuarioEjecutor)
         {
-            return await _proveedorRepository.ObtenerPorCedulaAsync(cedulaJuridica);
+            try
+            {
+                var proveedor = await _proveedorRepository.ObtenerPorCedulaAsync(cedulaJuridica);
+
+                await _bitacoraService.RegistrarAccionAsync(
+                    usuarioEjecutor,
+                    "Consulta de proveedor por cédula jurídica",
+                    new
+                    {
+                        cedulaJuridica,
+                        proveedorExistente = proveedor != null
+                    }
+                );
+
+                return proveedor;
+            }
+            catch (Exception ex)
+            {
+                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
+                throw;
+            }
         }
-        public async Task<Proveedor> ObtenerOInsertarProveedorAsync(Proveedor proveedor)
+
+        public async Task<Proveedor> ObtenerOInsertarProveedorAsync(Proveedor proveedor, string usuarioEjecutor)
         {
-            if (!Regex.IsMatch(proveedor.cedula_juridica, @"^\d{9,12}$"))
-                throw new ArgumentException("Formato de cédula jurídica inválido");
+            try
+            {
+                if (!Regex.IsMatch(proveedor.cedula_juridica, @"^\d{9,12}$"))
+                    throw new ArgumentException("Formato de cédula jurídica inválido");
 
-            var existente = await _proveedorRepository.ObtenerPorCedulaAsync(proveedor.cedula_juridica);
+                var existente = await _proveedorRepository.ObtenerPorCedulaAsync(proveedor.cedula_juridica);
 
-            if (existente != null)
-                return existente;
+                if (existente != null)
+                {
+                    await _bitacoraService.RegistrarAccionAsync(
+                        usuarioEjecutor,
+                        "Consulta proveedor por cédula jurídica",
+                        new
+                        {
+                            proveedor.cedula_juridica,
+                            proveedorExistente = true
+                        }
+                    );
 
-            var nuevoId = await _proveedorRepository.InsertarAsync(proveedor);
-            proveedor.id_proveedor = nuevoId;
-            return proveedor;
+                    return existente;
+                }
+
+                var nuevoId = await _proveedorRepository.InsertarAsync(proveedor);
+                proveedor.id_proveedor = nuevoId;
+
+                await _bitacoraService.RegistrarAccionAsync(
+                    usuarioEjecutor,
+                    "Inserción de proveedor",
+                    new
+                    {
+                        proveedor.cedula_juridica,
+                        proveedor.nombre,  
+                        proveedor.id_proveedor
+                    }
+                );
+
+                return proveedor;
+            }
+            catch (Exception ex)
+            {
+                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
+                throw;
+            }
         }
     }
 }

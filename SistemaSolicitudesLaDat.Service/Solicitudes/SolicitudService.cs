@@ -75,7 +75,6 @@ namespace SistemaSolicitudesLaDat.Service.Solicitudes
             }
         }
 
-
         public async Task ActualizarAsync(Solicitud solicitud, string usuarioEjecutor)
         {
             try
@@ -151,29 +150,88 @@ namespace SistemaSolicitudesLaDat.Service.Solicitudes
             }
         }
 
-        public async Task<(List<Solicitud> solicitudes, int totalRegistros)> ObtenerSolicitudesPublicadasAsync(int paginaActual, int pageSize)
+        public async Task<(List<Solicitud> solicitudes, int totalRegistros)> ObtenerSolicitudesPublicadasAsync(int paginaActual, int pageSize, string usuarioEjecutor)
         {
-            return await _solicitudRepository.ObtenerSolicitudesPublicadasAsync(paginaActual, pageSize);
-        }
-        public async Task<List<SolicitudResumen>> ObtenerSolicitudesPorProveedorAsync(int idProveedor)
-        {
-            // Lógica para consultar en base de datos las solicitudes donde participó el proveedor
-            // Por ejemplo, consulta que une Propuestas con Solicitudes y filtra por idProveedor
-
-            var resultados = await _solicitudRepository.ObtenerSolicitudesPorProveedorAsync(idProveedor);
-
-            // Mapear resultados a SolicitudResumen (si no viene directo así)
-            return resultados.Select(s => new SolicitudResumen
+            try
             {
-                consecutivo_oficio = s.consecutivo_oficio,
-                titulo_solicitud = s.titulo_solicitud
-            }).ToList();
+                var result = await _solicitudRepository.ObtenerSolicitudesPublicadasAsync(paginaActual, pageSize);
+
+                await _bitacoraService.RegistrarAccionAsync(
+                    usuarioEjecutor,
+                    "Consulta de solicitudes publicadas",
+                    new
+                    {
+                        paginaActual,
+                        pageSize,
+                        totalRegistros = result.totalRegistros
+                    }
+                );
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
+                throw;
+            }
         }
 
-        public async Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud)
+        public async Task<List<SolicitudResumen>> ObtenerSolicitudesPorProveedorAsync(int idProveedor, string usuarioEjecutor)
         {
-            return await _solicitudRepository.ObtenerDetalleSolicitudAsync(idSolicitud);
+            try
+            {
+                var resultados = await _solicitudRepository.ObtenerSolicitudesPorProveedorAsync(idProveedor);
+
+                await _bitacoraService.RegistrarAccionAsync(
+                    usuarioEjecutor,
+                    "Consulta de solicitudes por proveedor",
+                    new
+                    {
+                        idProveedor,
+                        totalSolicitudes = resultados.Count
+                    }
+                );
+
+                return resultados.Select(s => new SolicitudResumen
+                {
+                    consecutivo_oficio = s.consecutivo_oficio,
+                    titulo_solicitud = s.titulo_solicitud
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
+                throw;
+            }
         }
+
+        public async Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud, string usuarioEjecutor)
+        {
+            try
+            {
+                var result = await _solicitudRepository.ObtenerDetalleSolicitudAsync(idSolicitud);
+
+                await _bitacoraService.RegistrarAccionAsync(
+                    usuarioEjecutor,
+                    "Consulta detalle de solicitud",
+                    new
+                    {
+                        idSolicitud,
+                        solicitud = result.solicitud?.id_solicitud,
+                        totalEstados = result.estados?.Count ?? 0,
+                        totalRepresentantes = result.representantes?.Count ?? 0
+                    }
+                );
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
+                throw;
+            }
+        }
+
 
         public async Task<bool> EliminarAsync(Solicitud solicitud, string usuarioEjecutor)
         {
