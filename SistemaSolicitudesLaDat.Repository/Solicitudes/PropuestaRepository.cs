@@ -76,6 +76,25 @@ namespace SistemaSolicitudesLaDat.Repository.Solicitudes
             return cantidad > 0;
         }
 
+        public async Task<Propuesta> ObtenerPropuestaPorCedulaAsync(string cedula)
+        {
+            using var connection = _dbConnectionFactory.CreateConnection();
+
+            var result = await connection.QueryAsync<Propuesta, DetallePropuesta, Propuesta>(
+                "ObtenerPropuestaPorCedula", 
+                (propuesta, detalle) =>
+                {
+                    propuesta.Detalles = propuesta.Detalles ?? new List<DetallePropuesta>();
+                    propuesta.Detalles.Add(detalle);
+                    return propuesta;
+                },
+                new { cedulaProveedor = cedula },  
+                commandType: CommandType.StoredProcedure,
+                splitOn: "id_detalle"
+            );
+
+            return result.FirstOrDefault();
+        }
         public async Task<bool> MarcarPropuestaComoAprobadaAsync(int idPropuesta)
         {
             using var connection = _dbConnectionFactory.CreateConnection();

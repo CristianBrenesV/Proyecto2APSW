@@ -46,6 +46,11 @@ namespace SistemaSolicitudesLaDat.Services
             return await _propuestaRepository.ExistePropuestaAprobadaAsync(idSolicitud);
         }
 
+        public async Task<Propuesta> ObtenerPropuestaPorCedulaAsync(string cedula)
+        {
+            return await _propuestaRepository.ObtenerPropuestaPorCedulaAsync(cedula);
+        }
+
         public async Task<bool> AprobarPropuestaAsync(int idPropuesta)
         {
             var idSolicitud = await ObtenerIdSolicitudPorPropuestaAsync(idPropuesta);

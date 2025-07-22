@@ -52,7 +52,7 @@ namespace SistemaSolicitudesLaDat.Pages.CMS
 
             if (Participaciones == null || Participaciones.Count == 0)
             {
-                Mensaje = "No se encontraron solicitudes para este proveedor.";
+                Mensaje = "Datos no encontrados.";
             }
 
             return Page();

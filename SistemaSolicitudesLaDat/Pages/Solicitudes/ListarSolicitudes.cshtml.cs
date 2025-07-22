@@ -70,7 +70,6 @@ namespace SistemaSolicitudesLaDat.Pages.Solicitudes
             PaginaActual = pagina;
             Solicitudes = resultado.Solicitudes.ToList();
 
-            // Registrar acción de consulta
             if (!string.IsNullOrEmpty(idUsuarioEjecutor))
             {
                 await _bitacoraService.RegistrarAccionAsync(
@@ -123,6 +122,7 @@ namespace SistemaSolicitudesLaDat.Pages.Solicitudes
 
             return "table-success";
         }
+
         public async Task<IActionResult> OnPostPublicarAsync(string IdSolicitud, bool EsPublicada, DateTime? FechaVencimiento)
         {
             var idUsuarioEjecutor = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -161,6 +161,5 @@ namespace SistemaSolicitudesLaDat.Pages.Solicitudes
 
             return RedirectToPage();
         }
-
     }
 }
