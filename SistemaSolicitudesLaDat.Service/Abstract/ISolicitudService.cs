@@ -18,8 +18,8 @@ namespace SistemaSolicitudesLaDat.Service.Abstract
         Task<(IEnumerable<Solicitud> Solicitudes, int Total)> ObtenerSolicitudesPaginadasAsync(int PaginaActual, int pageSize);
         Task<int> MarcarSolicitudesVencidasAsync(string idEstadoVencida);
         Task PublicarAsync(Solicitud solicitud, string usuarioEjecutoro);
-        Task<(List<Solicitud> solicitudes, int totalRegistros)> ObtenerSolicitudesPublicadasAsync(int paginaActual, int pageSize, string usuarioEjecutor);
-        public Task<List<SolicitudResumen>> ObtenerSolicitudesPorProveedorAsync(int idProveedor, string usuarioEjecutor);
-        public Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud, string usuarioEjecutor);
+        Task<(List<Solicitud> solicitudes, int totalRegistros)> ObtenerSolicitudesPublicadasAsync(int paginaActual, int pageSize);
+        public Task<List<SolicitudResumen>> ObtenerSolicitudesPorProveedorAsync(int idProveedor);
+        public Task<(Solicitud solicitud, List<EstadoSolicitud> estados, List<Representante> representantes)> ObtenerDetalleSolicitudAsync(string idSolicitud);
     }
 }

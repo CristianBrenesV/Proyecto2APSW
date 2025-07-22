@@ -33,112 +33,30 @@ namespace SistemaSolicitudesLaDat.Services
             return idPropuesta;
         }
 
-        public async Task<List<PropuestaConProveedor>> ObtenerPropuestasConProveedorPorSolicitudAsync(string idSolicitud, string usuarioEjecutor)
+        public async Task<List<PropuestaConProveedor>> ObtenerPropuestasConProveedorPorSolicitudAsync(string idSolicitud)
         {
-            try
-            {
-                var propuestas = await _propuestaRepository.ObtenerPropuestasConProveedorPorSolicitudAsync(idSolicitud);
-
-                await _bitacoraService.RegistrarAccionAsync(
-                    usuarioEjecutor,
-                    "Consulta de propuestas con proveedor por solicitud",
-                    new
-                    {
-                        idSolicitud,
-                        totalPropuestas = propuestas.Count
-                    }
-                );
-
-                return propuestas;
-            }
-            catch (Exception ex)
-            {
-                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
-                throw;
-            }
+            return await _propuestaRepository.ObtenerPropuestasConProveedorPorSolicitudAsync(idSolicitud);
         }
-        public async Task<string?> ObtenerIdSolicitudPorPropuestaAsync(int idPropuesta, string usuarioEjecutor)
+        public async Task<string?> ObtenerIdSolicitudPorPropuestaAsync(int idPropuesta)
         {
-            try
-            {
-                var idSolicitud = await _propuestaRepository.ObtenerIdSolicitudPorPropuestaAsync(idPropuesta);
-
-                await _bitacoraService.RegistrarAccionAsync(
-                    usuarioEjecutor,
-                    "Consulta de ID de solicitud por propuesta",
-                    new
-                    {
-                        idPropuesta,
-                        idSolicitud
-                    }
-                );
-
-                return idSolicitud;
-            }
-            catch (Exception ex)
-            {
-                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
-                throw;
-            }
+             return await _propuestaRepository.ObtenerIdSolicitudPorPropuestaAsync(idPropuesta);
         }
-        public async Task<bool> ExistePropuestaAprobadaAsync(string idSolicitud, string usuarioEjecutor)
+        public async Task<bool> ExistePropuestaAprobadaAsync(string idSolicitud)
         {
-            try
-            {
-                var existeAprobada = await _propuestaRepository.ExistePropuestaAprobadaAsync(idSolicitud);
-
-                await _bitacoraService.RegistrarAccionAsync(
-                    usuarioEjecutor,
-                    "Consulta de existencia de propuesta aprobada",
-                    new
-                    {
-                        idSolicitud,
-                        existeAprobada
-                    }
-                );
-
-                return existeAprobada;
-            }
-            catch (Exception ex)
-            {
-                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
-                throw;
-            }
+            return await _propuestaRepository.ExistePropuestaAprobadaAsync(idSolicitud);
         }
 
-        public async Task<bool> AprobarPropuestaAsync(int idPropuesta, string usuarioEjecutor)
+        public async Task<bool> AprobarPropuestaAsync(int idPropuesta)
         {
-            try
-            {
-                var idSolicitud = await ObtenerIdSolicitudPorPropuestaAsync(idPropuesta, usuarioEjecutor);
-                if (string.IsNullOrEmpty(idSolicitud))
-                    return false;
+            var idSolicitud = await ObtenerIdSolicitudPorPropuestaAsync(idPropuesta);
+            if (string.IsNullOrEmpty(idSolicitud))
+                return false;
 
-                bool existeAprobada = await ExistePropuestaAprobadaAsync(idSolicitud, usuarioEjecutor);
-                if (existeAprobada)
-                    return false;
+            bool existeAprobada = await ExistePropuestaAprobadaAsync(idSolicitud);
+            if (existeAprobada)
+                return false;
 
-                bool resultado = await _propuestaRepository.MarcarPropuestaComoAprobadaAsync(idPropuesta);
-
-                await _bitacoraService.RegistrarAccionAsync(
-                    usuarioEjecutor,
-                    "Aprobación de propuesta",
-                    new
-                    {
-                        idPropuesta,
-                        idSolicitud,
-                        resultadoAprobacion = resultado
-                    }
-                );
-
-                return resultado;
-            }
-            catch (Exception ex)
-            {
-                await _bitacoraService.RegistrarErrorAsync(usuarioEjecutor, ex.ToString());
-                throw;
-            }
+            return await _propuestaRepository.MarcarPropuestaComoAprobadaAsync(idPropuesta);
         }
-
     }
 }

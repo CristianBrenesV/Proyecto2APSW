@@ -39,7 +39,9 @@ namespace SistemaSolicitudesLaDat.Pages.Solicitudes
 
         public async Task<IActionResult> OnPostAprobarAsync(int idPropuesta)
         {
-            if (await _propuestaService.AprobarPropuestaAsync(idPropuesta))
+            var resultado = await _propuestaService.AprobarPropuestaAsync(idPropuesta);
+
+            if (resultado)
                 TempData["Mensaje"] = "Propuesta aprobada correctamente.";
             else
                 TempData["Error"] = "No se pudo aprobar la propuesta. Quizá ya hay una aprobada.";

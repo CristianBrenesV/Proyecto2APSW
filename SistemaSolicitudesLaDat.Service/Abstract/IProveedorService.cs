@@ -9,7 +9,7 @@ namespace SistemaSolicitudesLaDat.Service.Abstract
 {
     public interface IProveedorService
     {
-        Task<Proveedor> ObtenerOInsertarProveedorAsync(Proveedor proveedor, string usuarioEjecutor);
-        Task<Proveedor?> ObtenerPorCedulaAsync(string cedulaJuridica, string usuarioEjecutor);
+        Task<Proveedor> ObtenerOInsertarProveedorAsync(Proveedor proveedor);
+        Task<Proveedor?> ObtenerPorCedulaAsync(string cedulaJuridica);
     }
 }

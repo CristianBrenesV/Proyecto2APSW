@@ -61,7 +61,6 @@ namespace SistemaSolicitudesLaDat.Pages.Solicitudes
                 return Page();
             }
 
-            // Forzar que el estado sea siempre "EST001"
             Solicitud.estado_solicitud = "EST001";
 
             var idUsuarioEjecutor = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

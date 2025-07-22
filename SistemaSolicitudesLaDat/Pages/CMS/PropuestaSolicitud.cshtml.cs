@@ -107,7 +107,7 @@ namespace SistemaSolicitudesLaDat.Pages.CMS
 
         public async Task<IActionResult> OnPostConfirmarAsync()
         {
-            // Validaciones iguales...
+            // Validaciones
             if (string.IsNullOrWhiteSpace(Proveedor.cedula_juridica) ||
                 !System.Text.RegularExpressions.Regex.IsMatch(Proveedor.cedula_juridica, @"^\d{9,12}$"))
             {
@@ -179,7 +179,6 @@ namespace SistemaSolicitudesLaDat.Pages.CMS
             }
 
             Mensaje = "Propuesta registrada exitosamente.";
-
             return Page();
         }
 
